@@ -1,8 +1,9 @@
 import {Router} from 'express';
 import passport from "passport";
 import { generateToken } from "../config/passport.config.js";
-import userModel from '../models/user.model.js';
+import UserModel from '../models/user.model.js';
 import { createHash } from "../util.js";
+import UserDTO from '../dao/dtos/user.dto.js';
 
 const router = Router();
 
@@ -41,15 +42,27 @@ router.get("/profile", passport.authenticate("jwt", { session: false }), (req, r
 
 // Registro (con hash)
 router.post("/register", async (req, res) => {
-    const { email, password } = req.body;
-  
+    const { first_name, last_name, email, password, age, role = "user" } = req.body;
+
+    if (!first_name || !last_name || !email || !password || !age) {
+    return res.status(400).send({ message: "Faltan campos obligatorios" });
+  }
+
     const exists = await UserModel.findOne({ email });
     if (exists) return res.status(400).send({ message: "Usuario ya registrado" });
-  
+
     const hashedPassword = await createHash(password);
-    const user = await UserModel.create({ email, password: hashedPassword });
-    res.send({ status: "success", user });
-  });
+    const user = await UserModel.create({
+        first_name,
+        last_name,
+        email,
+        password: hashedPassword,
+        age,
+        role
+    });
+
+  res.send({ status: "success", user });
+});
 
 
 
@@ -133,6 +146,13 @@ router.delete('/:uid', async (req, res) => {
         });
     }
 });
+
+
+router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const safeUser = new UserDTO(req.user);
+  res.send({ status: 'success', user: safeUser });
+});
+
 
 export default router;
 

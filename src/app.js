@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import userRouter from "./routes/users.router.js";
+import productRouter from './routes/product.router.js';
 import session from "express-session";
 import passport from "passport";
 import "./config/passport.config.js"; // importante importar
@@ -26,6 +27,8 @@ app.use(session({
   app.use(passport.session());
   
 app.use('/api/users', userRouter);
+app.use('/api/products', productRouter);
+
 
 const PORT = 8080;
 app.listen(PORT, () => {

@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true, index: true },
     age: { type: Number, required: true },
     password: { type: String, required: true },
-    cart: { type: Schema.Types.ObjectId, ref: 'carts' },
+    cart: { type: mongoose.Schema.Types.ObjectId, ref: 'carts' },
     role: {
         type: String,
         default: "USER",
@@ -17,9 +17,9 @@ const userSchema = new mongoose.Schema({
       }
 });
 
-const userModel = mongoose.model("User", userSchema);
+const UserModel = mongoose.model("User", userSchema);
 
-export default userModel;
+export default UserModel;
 
 
 
